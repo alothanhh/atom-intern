@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useAccount } from 'wagmi'
+import { useSwitchChain } from 'wagmi'
+import { getChainId } from '@wagmi/core'
 
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -50,14 +52,19 @@ function Dashboard() {
     const { open } = useWeb3Modal()
 
     const { isConnected } = useAccount()
+    const { chains, switchChain } = useSwitchChain()
 
+    // HANDLE TAB
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 
+
+    const [user, setUser] = useState()
     const [balance, setBalance] = useState<any>()
+    const chainId = getChainId(config)
 
     const getBalanceAddress = async (address: string) => {
         const balance = await getBalance(config, {
@@ -66,9 +73,7 @@ function Dashboard() {
         setBalance(balance)
     }
 
-    const [user, setUser] = useState()
-
-    useEffect(() => {
+    useEffect(() => { 
         const userLogin = String(localStorage.getItem('user'))
         const userJson = JSON.parse(userLogin)
 
@@ -76,12 +81,7 @@ function Dashboard() {
             setUser(userJson)
             getBalanceAddress(userJson.public_address)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    const router = useRouter()
-
-    console.log(balance)
+    }, [chainId])
 
     return (
         <div>
@@ -100,7 +100,7 @@ function Dashboard() {
                     fontWeight: '600',
                     fontSize: '14px',
                     textTransform: 'capitalize',
-                    marginRight:'15px'
+                    marginRight: '15px'
                 }}
                     onClick={() => open()
                     }>
@@ -113,10 +113,39 @@ function Dashboard() {
                     background: 'linear-gradient(to right bottom, #FAA6FF, #E90000)',
                     fontWeight: '600',
                     fontSize: '14px',
-                    textTransform: 'capitalize', height:'45px'
+                    textTransform: 'capitalize', height: '45px',
+                    marginRight: '15px'
                 }}>
                     Balance: {balance.formatted} {balance.symbol}
                 </Typography> : null}
+                {chainId === 11155111 ? //11155111 is Sepolia ChainID
+                    //Etherium
+                    <Button style={{
+                        padding: '10px',
+                        borderRadius: '30px',
+                        color: 'white',
+                        border: '0px solid gray',
+                        background: 'linear-gradient(to right bottom, #CBE7E3, #05999E)',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        textTransform: 'capitalize',
+                    }} key={chains[0].id} onClick={() => { switchChain({ chainId: chains[0].id }) }}>
+                        Switch to {chains[0].name}
+                    </Button> :
+                    //Sepolia
+                    <Button style={{
+                        padding: '10px',
+                        borderRadius: '30px',
+                        color: 'white',
+                        border: '0px solid gray',
+                        background: 'linear-gradient(to right bottom, #CBE7E3, #05999E)',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        textTransform: 'capitalize'
+                    }} key={chains[1].id} onClick={() => { switchChain({ chainId: chains[1].id }) }}>
+                        Switch to {chains[1].name}
+                    </Button>
+                }
             </div>
 
             <Box

@@ -56,8 +56,8 @@ function categoriesList(props: { type: any; }) {
                                 <Item sx={{
                                     width: 200,
                                     height: 200,
-                                    background: 'linear-gradient(to right bottom, #9EBAF3, #353A5F)',
-                                    color: 'white',
+                                    background: 'linear-gradient(to right bottom, #FFFCCE, #FFB330)',
+                                    color: '#112D60',
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     flexDirection: 'column'

@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useAccount } from 'wagmi'
 
@@ -8,6 +8,10 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import CategoriesList from '@/components/common/categories-list';
 import { useRouter } from 'next/navigation';
+
+import { getBalance } from '@wagmi/core'
+import { config } from '../../../config'
+import { Button, Typography } from '@mui/material';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -53,7 +57,31 @@ function Dashboard() {
         setValue(newValue);
     };
 
+    const [balance, setBalance] = useState<any>()
+
+    const getBalanceAddress = async (address: string) => {
+        const balance = await getBalance(config, {
+            address: `0x${address.substring(2)}`,
+        })
+        setBalance(balance)
+    }
+
+    const [user, setUser] = useState()
+
+    useEffect(() => {
+        const userLogin = String(localStorage.getItem('user'))
+        const userJson = JSON.parse(userLogin)
+
+        if (userLogin) {
+            setUser(userJson)
+            getBalanceAddress(userJson.public_address)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     const router = useRouter()
+
+    console.log(balance)
 
     return (
         <div>
@@ -63,18 +91,34 @@ function Dashboard() {
                 justifyContent: 'center',
                 margin: 10
             }}>
-                <button style={{
+                <Button style={{
                     padding: '10px',
                     borderRadius: '30px',
                     color: 'white',
                     border: '0px solid gray',
                     background: 'linear-gradient(to right bottom, #36EAEF, #6B0AC9)',
-                    fontWeight: '600'
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    textTransform: 'capitalize',
+                    marginRight:'15px'
                 }}
                     onClick={() => open()
                     }>
-                    View your account</button>
+                    View your account</Button>
+                {balance !== undefined ? <Typography sx={{
+                    padding: '10px',
+                    borderRadius: '30px',
+                    color: 'white',
+                    border: '0px solid gray',
+                    background: 'linear-gradient(to right bottom, #FAA6FF, #E90000)',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    textTransform: 'capitalize', height:'45px'
+                }}>
+                    Balance: {balance.formatted} {balance.symbol}
+                </Typography> : null}
             </div>
+
             <Box
                 gap={5}
                 sx={{

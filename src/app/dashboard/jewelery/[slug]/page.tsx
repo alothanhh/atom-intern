@@ -38,7 +38,7 @@ function JeweleryDetail({ params }: { params: { slug: string } }) {
     <div>
       {data ?
         <div style={{ display: 'flex', width: '100%', alignContent: 'center', justifyContent: 'center' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#8DECB4', borderRadius: '30px', width: '50%', padding: '30px' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'linear-gradient(to right bottom, #18A5A7, #BFFFC7)', borderRadius: '30px', width: '50%', padding: '30px' }}>
             <Typography style={{ fontSize: '32px' }}>{data.title}</Typography>
             <Typography style={{ fontWeight: '200' }}>{data.description}</Typography>
             <Typography>Category: {data.category}</Typography>

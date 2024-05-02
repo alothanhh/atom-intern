@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
+import { getBalance } from '@wagmi/core'
 
 import { useEffect, useState } from 'react'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
@@ -38,9 +39,6 @@ function Home() {
   const router = useRouter()
 
   const [mouted, setMouted] = useState(false);
-  useEffect(() => {
-    setMouted(true)
-  }, [])
 
   const { data: signMessageData, error, isPending, signMessageAsync, signMessage, variables } = useSignMessage()
 
@@ -135,7 +133,9 @@ function Home() {
   }, [signMessageData])
 
   useEffect(() => {
-    const userLogin = localStorage.getItem('user')
+    setMouted(true)
+
+    const userLogin = String(localStorage.getItem('user'))
 
     if (userLogin) setIsLogin(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -148,21 +148,13 @@ function Home() {
     }
   })
 
-  // const userLogin = localStorage.getItem('user')
-
-  // console.log(userLogin)
-
-  //   if (userLogin !== null) {
-  //     return <Dashboard />;
-  // }
-
   if (isLogin) return <Dashboard />
 
   return (
     mouted &&
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 10, fontSize: '32px', fontWeight: '600' }}>
-        Souvenir Website 
+        Souvenir Website
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 10 }}>
         <div style={{ marginRight: '10px' }}>

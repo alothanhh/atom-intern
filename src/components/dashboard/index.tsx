@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { getBalance } from '@wagmi/core'
 import { config } from '../../../config'
 import { Button, Typography } from '@mui/material';
+import { getAccount } from '@wagmi/core'
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -52,7 +53,10 @@ function Dashboard() {
     const { open } = useWeb3Modal()
 
     const { isConnected } = useAccount()
+    const account = getAccount(config);
+
     const { chains, switchChain } = useSwitchChain()
+    const chainId = getChainId(config)
 
     // HANDLE TAB
     const [value, setValue] = React.useState(0);
@@ -61,25 +65,24 @@ function Dashboard() {
         setValue(newValue);
     };
 
-
     const [user, setUser] = useState()
     const [balance, setBalance] = useState<any>()
-    const chainId = getChainId(config)
 
-    const getBalanceAddress = async (address: string) => {
-        const balance = await getBalance(config, {
-            address: `0x${address.substring(2)}`,
-        })
-        setBalance(balance)
-    }
+    // running when component mouted and chainId variable has changed
+    useEffect(() => {
+        const getBalanceAddress = async (address: any) => {
+            const balance = await getBalance(config, {
+                address: `0x${address.substring(2)}`,
+            })
+            setBalance(balance)
+        }
 
-    useEffect(() => { 
         const userLogin = String(localStorage.getItem('user'))
         const userJson = JSON.parse(userLogin)
 
         if (userLogin) {
             setUser(userJson)
-            getBalanceAddress(userJson.public_address)
+            getBalanceAddress(account.address)
         }
     }, [chainId])
 

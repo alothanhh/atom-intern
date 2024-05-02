@@ -11,6 +11,8 @@ import { useSignMessage } from 'wagmi'
 import { config } from '../../config'
 import { getAccount } from '@wagmi/core'
 import { disconnect } from '@wagmi/core'
+import Dashboard from '@/components/dashboard'
+import { Button } from '@mui/material'
 
 interface LoginRequestBody {
   signature: string | undefined;
@@ -27,6 +29,8 @@ function Home() {
   }
 
   const { isConnected } = useAccount()
+
+  const [isLogin, setIsLogin] = useState(false)
 
   // ACCOUNT TO GET CHAIN_ID AND PUBLIC_ADRESS
   const account = getAccount(config);
@@ -82,7 +86,7 @@ function Home() {
         // Handle error
       }
     };
-    if (isConnected) {
+    if (isConnected && !isLogin) {
       getMessage();
     }
   }, [isConnected])
@@ -120,7 +124,9 @@ function Home() {
         .then((response) => {
           console.log('Login successful!');
           console.log('Response:', response);
-          router.push('/dashboard');
+          localStorage.setItem('user', JSON.stringify(response.data))
+          setIsLogin(true)
+          // router.push('/dashboard');
         })
         .catch((error) => {
           console.error('Login failed:', error.message);
@@ -128,18 +134,54 @@ function Home() {
     }
   }, [signMessageData])
 
+  useEffect(() => {
+    const userLogin = localStorage.getItem('user')
+
+    if (userLogin) setIsLogin(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (!isConnected) {
+      setIsLogin(false)
+      localStorage.removeItem('user')
+    }
+  })
+
+  // const userLogin = localStorage.getItem('user')
+
+  // console.log(userLogin)
+
+  //   if (userLogin !== null) {
+  //     return <Dashboard />;
+  // }
+
+  if (isLogin) return <Dashboard />
+
   return (
     mouted &&
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 10, fontSize: '32px', fontWeight: '600' }}>
-        Website bán hàng
+        Souvenir Website 
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 10 }}>
         <div style={{ marginRight: '10px' }}>
           <w3m-network-button />
         </div>
         <div>
-          <button style={{ padding: '10px', borderRadius: '30px', color: 'white', border: '0px solid gray', backgroundColor: 'rgb(102, 125, 255)', fontWeight: '600' }} onClick={handleLogin}>Đăng nhập</button>
+          <Button sx={{
+            padding: '10px',
+            borderRadius: '30px',
+            color: 'white',
+            border: '0px solid gray',
+            background: 'linear-gradient(to right bottom, #36EAEF, #6B0AC9)',
+            fontWeight: '600',
+            '&:hover': {
+              color: 'white',
+              backgroundColor: 'rgb(102, 125, 255)',
+              opacity: "0.8"
+            }
+          }} onClick={handleLogin}>Đăng nhập</Button>
         </div>
       </div>
     </div>

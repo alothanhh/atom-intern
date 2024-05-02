@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useSignMessage } from 'wagmi'
 import { recoverMessageAddress } from 'viem'
 import { useState } from 'react'
-import { config } from '../../config'
+import { config } from '../../../config'
 import { getAccount } from '@wagmi/core'
 
 export function SignMessage() {
